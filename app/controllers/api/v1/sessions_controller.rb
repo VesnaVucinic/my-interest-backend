@@ -1,8 +1,9 @@
 class Api::V1::SessionsController < ApplicationController
     def create
-        @user = User.find_by(email: params[:user][:email])
+      # byebug
+        @user = User.find_by(email: params[:session][:email])
     
-        if @user && @user.authenticate(params[:user][:password])
+        if @user && @user.authenticate(params[:session][:password])
           session[:user_id] = @user.id
           render json: UserSerializer.new(@user), status: :ok
         else
@@ -12,9 +13,10 @@ class Api::V1::SessionsController < ApplicationController
         end
     end
     
+    #  need this method becouse in react when I refreshe page I'm loosing data
     def get_current_user
         if logged_in?
-          render json: UserSerializer.new(current_user)
+          render json: UserSerializer.new(@current_user)
         else
           render json: {
             error: "No one logged in"
@@ -28,4 +30,6 @@ class Api::V1::SessionsController < ApplicationController
           notice: "successfully logged out"
         }, status: :ok
     end 
+
+    
 end
