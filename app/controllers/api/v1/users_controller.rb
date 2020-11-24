@@ -9,8 +9,9 @@ class Api::V1::UsersController < ApplicationController
         @user = User.new(user_params)
     
         if @user.save
-          session[:user_id] = @user.id
-          render json: UserSerializer.new(@user), status: :created
+          payload = {user_id: user.id}
+          token = encode_token(payload)
+          render json: { user: UserSerializer.new(@user), jwt: token }, status: :created
         else
           resp = {
             error: @user.errors.full_messages.to_sentence
